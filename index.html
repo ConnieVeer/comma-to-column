@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Column to Comma Separated List Converter (Free, Instant)</title>
+<meta name="description" content="Convert a column from Excel or Google Sheets into a comma separated list in one click. Add quotes, remove duplicates, wrap in parentheses for SQL IN (...). Free and private.">
+<!-- After you get a domain, add: <link rel="canonical" href="https://YOURDOMAIN/"> -->
+<meta name="theme-color" content="#2563eb">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I convert an Excel column to a comma separated list?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Select the cells in Excel, copy them, paste them into the input box on this page and the comma separated list appears instantly. Click Copy to put the result on your clipboard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I make a list for an SQL IN clause?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Choose single quotes for text values (or no quotes for numbers) and tick Wrap in parentheses. Apostrophes inside values are escaped by doubling them, as SQL expects."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my data uploaded to a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The conversion runs entirely in your browser. Nothing you paste leaves your device."
+      }
+    }
+  ]
+}
+</script>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #cbd5e1;
+    --accent: #2563eb;
+    --accent-text: #ffffff;
+    --accent-hover: #1d4ed8;
+    --field: #ffffff;
+    --code: #eef2f7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --text: #e5eaf3;
+      --muted: #9fb0c8;
+      --border: #2a3a57;
+      --accent: #3b82f6;
+      --accent-text: #ffffff;
+      --accent-hover: #60a5fa;
+      --field: #0b1220;
+      --code: #0b1220;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px 48px; }
+  header { padding: 28px 0 8px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); line-height: 1.2; margin: 0 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  h2 { font-size: 1.35rem; margin: 40px 0 8px; }
+  h3 { font-size: 1.05rem; margin: 20px 0 4px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .panes { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 760px) { .panes { grid-template-columns: 1fr 1fr; } }
+  label.field-label { display: block; font-weight: 600; margin-bottom: 6px; }
+  textarea {
+    width: 100%;
+    min-height: 260px;
+    resize: vertical;
+    padding: 10px 12px;
+    background: var(--field);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  textarea:focus, select:focus, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px 20px;
+    margin: 16px 0 4px;
+    align-items: end;
+  }
+  .options label { display: block; font-size: 0.9rem; color: var(--muted); }
+  select {
+    width: 100%;
+    margin-top: 4px;
+    padding: 8px;
+    background: var(--field);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font: inherit;
+  }
+  .checks { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 0 4px; }
+  .checks label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
+  button {
+    font: inherit;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+  }
+  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  button.primary:hover { background: var(--accent-hover); }
+  button:not(.primary):hover { border-color: var(--accent); }
+  .count { margin-left: auto; color: var(--muted); font-size: 0.95rem; }
+  pre {
+    background: var(--code);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 8px 0;
+  }
+  ol, ul { padding-left: 22px; }
+  .note { color: var(--muted); font-size: 0.9rem; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Convert Column to Comma Separated List</h1>
+    <p class="sub">Paste a column from Excel, Google Sheets or any text. Get a clean list back instantly. Free, private and no sign-up.</p>
+  </header>
+
+  <main>
+    <section class="card" aria-label="Column to comma list converter">
+      <div class="panes">
+        <div>
+          <label class="field-label" for="input">Paste your column here</label>
+          <textarea id="input" placeholder="apple&#10;banana&#10;cherry" spellcheck="false" autofocus></textarea>
+        </div>
+        <div>
+          <label class="field-label" for="output">Result</label>
+          <textarea id="output" readonly placeholder="'apple','banana','cherry'" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="options">
+        <label>Separator
+          <select id="sep">
+            <option value="comma">Comma ( , )</option>
+            <option value="semicolon">Semicolon ( ; )</option>
+            <option value="pipe">Pipe ( | )</option>
+            <option value="space">Space</option>
+            <option value="newline">New line</option>
+          </select>
+        </label>
+        <label>Quotes around each item
+          <select id="quote">
+            <option value="none">None</option>
+            <option value="single">Single ( ' )</option>
+            <option value="double">Double ( " )</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="checks">
+        <label><input type="checkbox" id="trim" checked> Trim spaces</label>
+        <label><input type="checkbox" id="skipEmpty" checked> Remove empty lines</label>
+        <label><input type="checkbox" id="dedupe"> Remove duplicates</label>
+        <label><input type="checkbox" id="spaceAfter"> Add space after separator</label>
+        <label><input type="checkbox" id="parens"> Wrap in parentheses (SQL IN)</label>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="convert">Convert</button>
+        <button type="button" id="copy">Copy</button>
+        <button type="button" id="clear">Clear</button>
+        <span class="count" id="count" aria-live="polite">0 items</span>
+      </div>
+      <p class="note" style="margin:12px 0 0">The result updates while you type. Everything runs in your browser, so your data never leaves your device.</p>
+    </section>
+
+    <section>
+      <h2>How to convert an Excel column to a comma separated list</h2>
+      <ol>
+        <li>Select the cells in Excel or Google Sheets and copy them (Ctrl+C or Cmd+C).</li>
+        <li>Paste them into the box above. Each cell becomes one item.</li>
+        <li>Pick your separator, and add quotes if you need them.</li>
+        <li>Click <strong>Copy</strong> and paste the result where you need it.</li>
+      </ol>
+
+      <h2>Example: build an SQL IN list</h2>
+      <p>Paste three values, choose <strong>single quotes</strong> and tick <strong>Wrap in parentheses</strong>:</p>
+<pre>apple
+banana
+cherry</pre>
+      <p>You get:</p>
+<pre>('apple','banana','cherry')</pre>
+      <p>Which you can use directly in a query:</p>
+<pre>SELECT * FROM products WHERE name IN ('apple','banana','cherry');</pre>
+      <p>For numbers or IDs, set quotes to <strong>None</strong>. Apostrophes inside a value are escaped by doubling them, so <code>O'Brien</code> becomes <code>'O''Brien'</code>, which is what SQL expects.</p>
+    </section>
+
+    <section>
+      <h2>Frequently asked questions</h2>
+
+      <h3>How do I convert an Excel column to a comma separated list?</h3>
+      <p>Copy the cells in Excel, paste them into the input box on this page, and the comma separated list appears instantly. Click Copy to put it on your clipboard.</p>
+
+      <h3>How do I make a list for an SQL IN clause?</h3>
+      <p>Choose single quotes for text values (or no quotes for numbers) and tick Wrap in parentheses. You can paste the result straight after <code>IN</code>.</p>
+
+      <h3>Can I remove duplicates and empty lines?</h3>
+      <p>Yes. Tick Remove duplicates and Remove empty lines. The first occurrence of each value is kept, in its original order.</p>
+
+      <h3>Is my data uploaded to a server?</h3>
+      <p>No. The conversion runs entirely in your browser. Nothing you paste is sent or stored anywhere.</p>
+
+      <h3>Can I use another separator than a comma?</h3>
+      <p>Yes. Choose semicolon, pipe, space or new line. This is handy for CSV files, URLs, tags or config files.</p>
+    </section>
+
+    <!-- AFFILIATE SECTION: remove the "hidden" attribute once you add your links.
+         Add a short disclosure such as "Some links are affiliate links." -->
+    <section id="resources" hidden>
+      <h2>Recommended resources</h2>
+      <p class="note">Some links are affiliate links. They cost you nothing extra.</p>
+      <ul>
+        <!-- <li><a href="YOUR-AFFILIATE-LINK" rel="sponsored noopener" target="_blank">Name of product</a> – one line on why it helps.</li> -->
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Column to Comma List &middot; a free tool. Your input is processed locally in your browser.</p>
+  </footer>
+</div>
+
+<script>
+// CORE-START
+function convertList(text, o) {
+  if (text.trim() === '') return { text: '', count: 0, removed: 0 };
+  var items = text.split(/\r\n|\r|\n/);
+  if (o.trim) items = items.map(function (s) { return s.trim(); });
+  if (o.skipEmpty) items = items.filter(function (s) { return s.length > 0; });
+  var removed = 0;
+  if (o.dedupe) {
+    var seen = new Set();
+    var unique = [];
+    items.forEach(function (s) {
+      if (seen.has(s)) { removed++; return; }
+      seen.add(s);
+      unique.push(s);
+    });
+    items = unique;
+  }
+  var q = o.quote === 'single' ? "'" : o.quote === 'double' ? '"' : '';
+  if (q) {
+    items = items.map(function (s) { return q + s.split(q).join(q + q) + q; });
+  }
+  var seps = { comma: ',', semicolon: ';', pipe: '|', space: ' ', newline: '\n' };
+  var sep = seps[o.sep] || ',';
+  if (o.spaceAfter && o.sep !== 'space' && o.sep !== 'newline') sep += ' ';
+  var out = items.join(sep);
+  if (o.parens) out = '(' + out + ')';
+  return { text: out, count: items.length, removed: removed };
+}
+// CORE-END
+
+(function () {
+  if (typeof document === 'undefined') return;
+  var $ = function (id) { return document.getElementById(id); };
+  var input = $('input'), output = $('output'), count = $('count');
+
+  function options() {
+    return {
+      sep: $('sep').value,
+      quote: $('quote').value,
+      trim: $('trim').checked,
+      skipEmpty: $('skipEmpty').checked,
+      dedupe: $('dedupe').checked,
+      spaceAfter: $('spaceAfter').checked,
+      parens: $('parens').checked
+    };
+  }
+
+  function run() {
+    var r = convertList(input.value, options());
+    output.value = r.text;
+    var label = r.count + (r.count === 1 ? ' item' : ' items');
+    if (r.removed) label += ' (' + r.removed + ' duplicate' + (r.removed === 1 ? '' : 's') + ' removed)';
+    count.textContent = label;
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      try {
+        output.focus();
+        output.select();
+        document.execCommand('copy') ? resolve() : reject();
+      } catch (e) { reject(e); }
+    });
+  }
+
+  input.addEventListener('input', run);
+  ['sep', 'quote', 'trim', 'skipEmpty', 'dedupe', 'spaceAfter', 'parens'].forEach(function (id) {
+    $(id).addEventListener('change', run);
+  });
+  $('convert').addEventListener('click', run);
+  $('clear').addEventListener('click', function () {
+    input.value = '';
+    run();
+    input.focus();
+  });
+  $('copy').addEventListener('click', function () {
+    var btn = this;
+    if (!output.value) return;
+    copyText(output.value).then(function () {
+      btn.textContent = 'Copied!';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+    }, function () {
+      btn.textContent = 'Press Ctrl+C';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  run();
+})();
+</script>
+</body>
+</html>
